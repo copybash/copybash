@@ -9,7 +9,9 @@ function log()
         local level=$1
         shift
         local msg=$*
+	local ts=$(date +"%F %T")
         case $level in
+                debug)  echo -e "$ts [DEBUG] $msg";;
                 info)   echo -e "$ts [INFO] $msg";;
                 note)   echo -e "$ts [NOTE] \033[92m$msg\033[0m";;
                 warn)   echo -e "$ts [WARN] \033[93m$msg\033[0m";;
