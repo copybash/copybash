@@ -1,2 +1,2 @@
-# master.bash
-这是一个 CentOS Linux 管理工具集，包含了很多提高工作效率的 .sh 工具。如果你有任何好的想法，可以给我信息。
+I create this project to save and share my bash tools. Most of all are complete and can be used on your CentOS 6/7 systems.
+If appreciate my thoughts, you may want to click a 'Start' for the project or donate some fee to me.
