@@ -1,0 +1,128 @@
+" 如何查看相关设置的说明文档 :help key
+
+" """"" 普通操作设置 """"""""""""""""""""""
+" 关闭兼容 vi ，以便使用命令补全功能
+set nocompatible
+" 开启智能补全功能
+set completeopt=longest,menu
+" 设置在插入模式下 <BS> 快速删除光标前面的空白字符。
+" 逗号分隔的三个值分别指：
+"   行首缩进的所有空白符、换行符和行中光标前的所有空白符。
+set backspace=indent,eol,start
+" 设置保留 N 个 vim 历史命令
+set history=100
+" 在 Vim 窗口的右下角显示当前光标位置
+set ruler
+" 在 Vim 窗口右下角，标尺的右边显示未完成的命令
+set showcmd
+" 在输入部分查找模式时自动跳到相应的匹配点
+set incsearch
+" 高亮查找模式下的匹配点
+set hlsearch
+" 开启文档类型探测功能
+" 开启加载插件功能
+" 始终加载缩进插件
+filetype plugin indent on
+" 始终开启语法高亮功能
+syntax on
+" 使用 koehler.vim 配色方案
+colorscheme koehler
+" 背景色设置为深色
+set background=dark
+" 搜索时忽略大小写敏感
+set ignorecase
+" 开启自动缩进功能
+set autoindent
+" 开启智能对齐
+set smartindent
+" 设置制表符 tab 的宽度为 4
+set tabstop=4
+" 设置软制表符的宽度
+set softtabstop=4
+" 设置缩进使时用4个空格
+set shiftwidth=4
+" 设置光标可以从行首或者行尾跳到另一行
+set whichwrap=b,s,<,>,[,]
+" 设备背景色为黑色
+set previewwindow
+" 显示最后一个窗口的状态
+set laststatus=2
+" 显示 vim 当前模式
+set showmode
+" 开启自动保存文档功能
+set autowrite
+" 设置缩进使时用4个空格
+set shiftwidth=4
+" 使用 C/C++ 缩进方式
+set cindent
+" 设置C/C++语言的具体缩进方式
+set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1
+" 设置退格键可用
+set backspace=2
+" 设置匹配模式，显示匹配的括号
+set showmatch
+" 整词换行
+set linebreak
+" 显示预览窗口
+set previewwindow
+" 显示中文帮助
+if version >= 603
+     set helplang=cn
+     set encoding=utf-8
+endif
+
+" """"" 键盘映射设置 """"""""""""""""""""""
+" """"" 参考 :help map.txt
+" """"" 使用 :map 打印所有的映射键
+" F2 打开/关闭标签列表
+" 组合键 把一个单词用指定的符号括起来
+"   <F5>    表示按键 F5
+"   b       移动到当前单词第一个字符的前面
+"   i{      插入字符 {
+"   <Esc>   退出插入模式
+"   e       移动到当前单词最后一个字符的后面
+"   a}      追加字符 }
+map <unique> \{} bi{<Esc>ea}<Esc>
+map <unique> \{" bi{"<Esc>ea"}<Esc>
+map <unique> \[] bi[<Esc>ea]<Esc>
+map <unique> \() bi(<Esc>ea)<Esc>
+map <unique> \<> bi<<Esc>ea><Esc>
+map <unique> \"" bi"<Esc>ea"<Esc>
+map <unique> \'' bi'<Esc>ea'<Esc>
+
+"map <F2> :call CompileGo()<CR>
+"func CompileGo()
+"    exec "echo 'This is am example for calling function in vim'"
+"endfunc
+
+" 在当前工作目录搜索 tags
+set tags+=./tags
+"当taglist是最后一个分割窗口时，自动退出 vim
+let Tlist_Exit_OnlyWindow=1
+
+" """"" F5 开启/关闭编程模式 """"""""""""""""""""""""""""""
+map <unique> <F5> :call SwitchCodingStyle()<CR>
+let g:taglist_is_enable = 0
+func SwitchCodingStyle()
+    set nu
+    if g:taglist_is_enable == 0
+        " 开启标签列表显示功能
+        :TlistOpen
+        " 实时更新 TagList(实际上延迟10s左右)：0 - 关闭，1 - 开启 (不生效)
+        let Tlist_Process_File_Always=1
+        " 开启鼠标所有模式，这时需要配合 Shift 键才可以使用系统粘贴板
+        set mouse=a
+        " 允许折叠
+        set foldenable
+        " 开启手动折叠功能
+        set foldmethod=manual
+        let g:taglist_is_enable = 1
+    else
+        " 关闭标签列表显示功能
+        :TlistClose
+        " 清空鼠标操作模式
+        set mouse=
+        set nonu
+        let g:taglist_is_enable = 0
+    endif
+endfunc
