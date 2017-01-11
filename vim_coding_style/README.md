@@ -1,10 +1,10 @@
 # 安装
 
 git clone git@github.com:copybash/copybash.git
-cd copybash/vim_coding_style
 
 # 获取脚本使用帮助
 
+cd copybash/vim_coding_style
 > sh init_work_env.sh
 
 # 脚本使用例子 
@@ -15,7 +15,7 @@ cd copybash/vim_coding_style
 
 ## 2. 为已存在用户安装 vim 设置 
 
-==请先备份该用户的文件：~/.vimrc==
+**请先备份该用户的文件：~/.vimrc**
 
 > sh init_work_env.sh install username
 
