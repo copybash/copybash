@@ -7,13 +7,15 @@ VIMPATH=/data/$USERNAME/.vim
 CURRENT_PATH=$(dirname $0)
 RUNTIME_PATH=$(cd $CURRENT_PATH; pwd)
 
-function usagesss()
+function usage()
 {
 cat << eof
 usage: sh $(basename $0) opt usr
     opt
-        check   - check user's info whether it exists or not
-        create  - create an new user who will belong to groups devops
+        check   - check user's info.
+        create  - create an new user who will belong to group devops, 
+                    an install the vim coding style settings.
+        install - just install vim coding style settings for current user.
     usr 
         the new username you want to create, the default group is 'devops'
 eof
@@ -102,9 +104,7 @@ function createDirForVim()
     unzip -qo $RUNTIME_PATH/taglist_46.zip -d $VIMPATH && echo "ok" || exit 1
     log noten "create file [$USERHOME/.vimrc]: "
     cp $RUNTIME_PATH/vimrc $USERHOME/.vimrc && echo "ok" || exit 1
-    log noten "create file [$USERHOME/.vimrc.co]: "
-    cp $RUNTIME_PATH/vimrc.co $USERHOME/.vimrc.co && echo "ok" || exit 1
-    chown -R $USERNAME:$GROUP $USERHOME/{.vim*,.bashrc}
+    chown -R $USERNAME:$GROUP $USERHOME/.vimrc
 }
 
 function installVimDocCN()
@@ -115,14 +115,6 @@ function installVimDocCN()
     cd $RUNTIME_PATH/vimcdoc-1.8.0
     sh vimcdoc.sh -i >/dev/null 2>&1 && echo "ok" || exit 1
     cd $RUNTIME_PATH && rm -rf $RUNTIME_PATH/vimcdoc-1.8.0
-}
-
-function createCodingCmd()
-{
-    log noten "create new command [coding]: "
-    cp $RUNTIME_PATH/bashrc $USERHOME/.bashrc && echo "ok" || exit 1
-    chown -R $USERNAME:$GROUP $USERHOME/{.vim*,.bashrc}
-
 }
 
 function createWorkingDirs()
@@ -139,20 +131,19 @@ function create()
     fi
     createUser
     createDirForVim
-    createCodingCmd
+    install
+}
+
+function install()
+{
+    createDirForVim
+    installVimDocCN
+    source ~/.bashrc
 }
 
 function delete()
 {
     userdel -r $USERNAME
-}
-
-function installCodingCMD()
-{
-    createDirForVim
-    installVimDocCN
-    createCodingCmd
-    source ~/.bashrc
 }
 
 # mian function
@@ -163,7 +154,7 @@ case $1 in
     check)      check;;
     create)     create;;
     delete)     delete;;
-    install)    installCodingCMD;;
+    install)    install;;
     *)          usage; exit 1;;
 esac
 
