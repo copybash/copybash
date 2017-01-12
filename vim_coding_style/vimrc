@@ -117,6 +117,7 @@ func SwitchCodingStyle()
         " 开启手动折叠功能
         set foldmethod=manual
         let g:taglist_is_enable = 1
+        echo "TagList opened"
     else
         " 关闭标签列表显示功能
         :TlistClose
@@ -124,5 +125,6 @@ func SwitchCodingStyle()
         set mouse=
         set nonu
         let g:taglist_is_enable = 0
+        echo "TagList closed"
     endif
 endfunc

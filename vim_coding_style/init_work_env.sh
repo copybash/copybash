@@ -1,9 +1,4 @@
 #!/bin/bash
-GROUP=devops
-USERNAME=$2
-USERHOME=/data/$USERNAME
-VIMPATH=/data/$USERNAME/.vim
-
 CURRENT_PATH=$(dirname $0)
 RUNTIME_PATH=$(cd $CURRENT_PATH; pwd)
 
@@ -32,6 +27,7 @@ function log()
                 noten)  echo -en "\033[92m$msg\033[0m";;
                 warn)   echo -e "\033[93m$msg\033[0m";;
                 error)  echo -e "\033[91m$msg\033[0m";;
+                errorn) echo -en "\033[91m$msg\033[0m";;
         esac
 }
 
@@ -109,24 +105,26 @@ function createDirForVim()
 
 function installVimDocCN()
 {
-    log noten "install Vim Chinese Doc: "
+    log noten "install Vim Chinese Docs: "
     cd $RUNTIME_PATH
     tar -zxf vimcdoc-1.8.0.tar.gz
     cd $RUNTIME_PATH/vimcdoc-1.8.0
     sh vimcdoc.sh -i >/dev/null 2>&1 && echo "ok" || exit 1
     cd $RUNTIME_PATH && rm -rf $RUNTIME_PATH/vimcdoc-1.8.0
+    chown -R $USERNAME:$GROUP $USERHOME/.vim
 }
 
 function createWorkingDirs()
 {
-    mkdir -pv $USERHOME/{download,coding/bash,coding/python,github.com,logs/nginx}
-    chown -R $USERNAME:$GROUP $USERHOME
+    dirs="$USERHOME/{download,coding/bash,coding/python,github.com,logs/nginx}"
+    mkdir -pv $dirs
+    chown -R $USERNAME:$GROUP $dirs
 }
 
 function create()
 {
     if [ `whoami` != "root" ]; then
-        log error "Error: you must run the script with 'root' privillege"
+        log error "Error: the username can not be 'root'"
         exit 1
     fi
     createUser
@@ -138,7 +136,6 @@ function install()
 {
     createDirForVim
     installVimDocCN
-    source ~/.bashrc
 }
 
 function delete()
@@ -149,7 +146,28 @@ function delete()
 # mian function
 
 if [ $# -ne 2 ]; then usage; exit 1; fi
-if [ "$USERNAME" == "root" ]; then log error "Error: the username can not be 'root'"; exit 1; fi
+opt=$1
+usr=$2
+if [ "$usr" == "root" ]; then
+    log errorn "You're 'root'. Do you want to continue [y/n]? "
+    read i
+    if [ "$i" != "y" ]; then
+        echo "exit"
+        exit 1
+    fi
+fi
+USERNAME=$usr
+case $2 in
+    root)   GROUP=root
+            USERHOME=/root
+            VIMPATH=/$USERNAME/.vim 
+            ;;
+    *)      GROUP=devops
+            USERHOME=/data/$USERNAME
+            VIMPATH=/data/$USERNAME/.vim
+            ;;
+esac
+
 case $1 in
     check)      check;;
     create)     create;;
