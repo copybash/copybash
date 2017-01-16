@@ -2,7 +2,7 @@
 
 # 安装
 
-> git clone git@github.com:copybash/copybash.git
+> git clone https://github.com/copybash/copybash.git
 
 # 获取脚本使用帮助
 

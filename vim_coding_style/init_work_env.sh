@@ -134,6 +134,8 @@ function create()
 
 function install()
 {
+    groups $USERNAME
+    if [ $? -ne 0 ]; then exit 1; fi
     createDirForVim
     installVimDocCN
 }
