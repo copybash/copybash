@@ -13,7 +13,7 @@ set backspace=indent,eol,start
 set history=100
 " 在 Vim 窗口的右下角显示当前光标位置
 set ruler
-" 在 Vim 窗口右下角，标尺的右边显示未完成的命令
+" 在屏幕最后一行显示 (部分的) 命令。如果你的终端很慢，关闭此选项。
 set showcmd
 " 在输入部分查找模式时自动跳到相应的匹配点
 set incsearch
@@ -25,7 +25,7 @@ set hlsearch
 filetype plugin indent on
 " 始终开启语法高亮功能
 syntax on
-" 使用 koehler.vim 配色方案
+" 使用 /usr/share/vim/vim74/colors/ 里面的 koehler.vim 配色方案
 colorscheme koehler
 " 背景色设置为深色
 set background=dark
@@ -111,6 +111,8 @@ func SwitchCodingStyle()
         " 实时更新 TagList(实际上延迟10s左右)：0 - 关闭，1 - 开启 (不生效)
         let Tlist_Process_File_Always=1
         " 开启鼠标所有模式，这时需要配合 Shift 键才可以使用系统粘贴板
+        "   复制：Shift + 双击左键
+        "   粘贴：Shift + Ins
         set mouse=a
         " 允许折叠
         set foldenable

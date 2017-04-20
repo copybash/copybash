@@ -5,14 +5,10 @@ RUNTIME_PATH=$(cd $CURRENT_PATH; pwd)
 function usage()
 {
 cat << eof
-usage: sh $(basename $0) opt usr
-    opt
-        check   - check user's info.
-        create  - create an new user who will belong to group devops, 
-                    an install the vim coding style settings.
-        install - just install vim coding style settings for current user.
-    usr 
-        the new username you want to create, the default group is 'devops'
+usage: sh $(basename $0) check|install
+        check   - Check current user's info.
+        install - Just install vim coding style settings for current user.
+                  Note: Install commad 'ctags' : yum install -y ctags
 eof
 }
 
@@ -40,67 +36,58 @@ function printResult()
     else
             level=error
             msg="not found"
-            tr=1
+            rt=1
     fi
     log $level "$msg"
-    return $tr
+    return $rt
 }
 
 # check functions
-enum=0
-function checkUser()
+function check()
 {
-    log noten "1. Usr [$USERNAME]:\t"
-    groups $USERNAME >/dev/null 2>&1
-    printResult $?
+    checkUserHome
+    checkVim
+    checkCtagsCmd
 }
 
 function checkUserHome()
 {
-    log noten "2. Dir [$USERHOME]:\t"
-    test -d $USERHOME >/dev/null 2>&1
+    log noten "1. Dir [$HOME]:\t"
+    test -d $HOME >/dev/null 2>&1
     printResult $?
 }
 
 function checkVim()
 {
-    log noten "3. Dir [$VIMPATH]:\t"
+    log noten "2. Dir [$VIMPATH]:\t"
     test -d $VIMPATH >/dev/null 2>&1
     printResult $?
 }
 
-function check()
+function checkCtagsCmd()
 {
-    checkUser
-    ((enum=enum+$?))
-    checkUserHome
-    ((enum=enum+$?))
-    checkVim
-    ((enum=enum+$?))
-    if [ $enum -ne 0 ]; then 
-            exit 1
-    fi
+    log noten "3. Cmd [ctags]:\t"
+    which ctags 1>/dev/null 2>&1
+    printResult $?
 }
 
-# create functions
-
-function createUser()
+# install functions
+function install()
 {
-    log noten "create group [$GROUP]: "
-    groupadd $GROUP && echo "ok"
-    log noten "create user [$USERNAME]: "
-    useradd $USERNAME -g $GROUP -md $USERHOME && echo ok || exit 1
+    createDirForVim
+    installVimDocCN
 }
 
 function createDirForVim()
 {
     log noten "create dir [$VIMPATH]: "
     mkdir -p $VIMPATH && echo ok || exit 1
+
     log noten "install vim plugin [taglist]: "
     unzip -qo $RUNTIME_PATH/taglist_46.zip -d $VIMPATH && echo "ok" || exit 1
-    log noten "create file [$USERHOME/.vimrc]: "
-    cp $RUNTIME_PATH/vimrc $USERHOME/.vimrc && echo "ok" || exit 1
-    chown -R $USERNAME:$GROUP $USERHOME/.vimrc
+
+    log noten "create file [$HOME/.vimrc]: "
+    cp $RUNTIME_PATH/vimrc $HOME/.vimrc && echo "ok" || exit 1
 }
 
 function installVimDocCN()
@@ -111,45 +98,10 @@ function installVimDocCN()
     cd $RUNTIME_PATH/vimcdoc-1.8.0
     sh vimcdoc.sh -i >/dev/null 2>&1 && echo "ok" || exit 1
     cd $RUNTIME_PATH && rm -rf $RUNTIME_PATH/vimcdoc-1.8.0
-    chown -R $USERNAME:$GROUP $USERHOME/.vim
 }
 
-function createWorkingDirs()
-{
-    dirs="$USERHOME/{download,coding/bash,coding/python,github.com,logs/nginx}"
-    mkdir -pv $dirs
-    chown -R $USERNAME:$GROUP $dirs
-}
-
-function create()
-{
-    if [ `whoami` != "root" ]; then
-        log error "Error: the username can not be 'root'"
-        exit 1
-    fi
-    createUser
-    createDirForVim
-    install
-}
-
-function install()
-{
-    groups $USERNAME
-    if [ $? -ne 0 ]; then exit 1; fi
-    createDirForVim
-    installVimDocCN
-}
-
-function delete()
-{
-    userdel -r $USERNAME
-}
-
-# mian function
-
-if [ $# -ne 2 ]; then usage; exit 1; fi
+# main function
 opt=$1
-usr=$2
 if [ "$usr" == "root" ]; then
     log errorn "You're 'root'. Do you want to continue [y/n]? "
     read i
@@ -158,22 +110,9 @@ if [ "$usr" == "root" ]; then
         exit 1
     fi
 fi
-USERNAME=$usr
-case $2 in
-    root)   GROUP=root
-            USERHOME=/root
-            VIMPATH=/$USERNAME/.vim 
-            ;;
-    *)      GROUP=devops
-            USERHOME=/data/$USERNAME
-            VIMPATH=/data/$USERNAME/.vim
-            ;;
-esac
-
+VIMPATH=$HOME/.vim
 case $1 in
     check)      check;;
-    create)     create;;
-    delete)     delete;;
     install)    install;;
     *)          usage; exit 1;;
 esac
