@@ -55,8 +55,6 @@ def execCmds(user, pwd, hosts, cmds, mode='subprocess'):
 	    os.remove(tmp)
 	sys.exit(0)
     if mode == 'polysh':
-	if cmds is None:
-	    cmds = ''
 	sshcmd = "polysh --hosts-file=" + hosts + \
 		 "	 --password-file=" + pwd + \
 		 "	 --ssh=\"ssh -l " + user + " -o StrictHostKeyChecking=no\"" \
