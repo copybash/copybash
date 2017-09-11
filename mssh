@@ -1,0 +1,142 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# Author: mason.chan
+# Date: 201-09-11
+# Description: 此脚本可以运行在 2 种模式下：
+#   1、顺序 ssh，适用于小批量远程执行命令的场景，一般比较关心输出结果
+#   2、并发 ssh，适用于不关心顺序输出结果的场景
+
+''' install polysh
+wget http://guichaz.free.fr/polysh/files/polysh-0.4.tar.gz
+tar -xf polysh-0.4.tar.gz
+cd polysh-0.4
+sudo python setup.py install
+'''
+
+import re
+import os
+import sys
+import time
+import getpass
+import logging
+import urllib
+import httplib
+import hashlib
+import subprocess
+from optparse import OptionParser
+
+default_passwd = 'pwdfile'
+tmp = '/dev/shm/.hostmp.' + str(os.getpid())
+
+'''
+user: string
+hosts: list
+cmds: string
+mode: string, subprocess or polysh 
+'''
+def execCmds(user, pwd, hosts, cmds, mode='subprocess'):
+    print('Mode: ' + mode)
+    print('Cmds: ' + str(cmds))
+    if mode == 'subprocess':
+	with open(hosts, 'rt') as f:
+	    lines = f.readlines()
+	    i = 0
+	    for line in lines:
+	        i += 1
+	        host = line.split('#')[0]
+    	        print('\033[92m' + str(i) + '. ' + user + '@' + str(host) + '\033[0m')
+    	        sshcmd = 'sshpass -f ' + pwd + ' ssh ' + user + '@' + str(host) + ' ' + str(cmds)
+    	        #print(sshcmd)
+		subprocess.call(sshcmd, shell=True)
+		# cmds 为空时，直接 ssh 登录第一个主机，然后退出循环
+		if cmds == '':
+		    break
+	if os.path.exists(tmp):
+	    os.remove(tmp)
+	sys.exit(0)
+    if mode == 'polysh':
+	if cmds is None:
+	    cmds = ''
+	sshcmd = "polysh --hosts-file=" + hosts + \
+		 "	 --password-file=" + pwd + \
+		 "	 --ssh=\"ssh -l " + user + " -o StrictHostKeyChecking=no\"" \
+		 "	 --command=\"" + cmds + "\""
+	#print(sshcmd)
+	subprocess.call(sshcmd, shell=True)
+'''
+mode: stdio or file
+'''
+def parseHosts(hosts, mode):
+    print('Host: ' + hosts)
+    hostList = list()
+    if mode == 'stdio':
+	hostList = hosts.split(' ')
+    if mode == 'file':
+	with open(hosts, 'rt') as f:
+	    for line in f.readlines():
+		hostList.append(line.split('#')[0])
+    if len(hostList) == 0:
+	print('\033[91m错误：至少需要一个主机\033[0m')
+	sys.exit(1)
+    return hostList
+
+# 解析命令行参数，并返回解析结果
+def parseArguments():
+    parser = OptionParser(usage="usage: %prog [options]")
+    # nargs 不支持 * + ？ 动态参数形式，所以如果一个操作需要输入多个值时，需要使用双引号将他们括起来
+    # help 不支持中文，所以 ...
+    parser.add_option("-s", "--subprocess", nargs=0, help="[default] run ssh with Python mode 'subprocess'")
+    parser.add_option("-p", "--polysh", nargs=0, help="[optional] run ssh with 'polysh'.")
+    parser.add_option("-u", "--user", default=getpass.getuser(), help="[default] the current user")
+    parser.add_option("-w", "--password", default=default_passwd, help="[default] read pasword from a file")
+    parser.add_option("-i", "--input", help="[required] read hosts from a file or standard input, e.g.: 1. /tmp/hosts 2.'10.199.204.101 10.199.204.102'")
+    parser.add_option("-c", "--commands", default='', help="[optional] commands to execute on the remote shells. Or login on the first host without any cmds.")
+    parser.add_option("-d", "--display", nargs=0, help="[optional] display all infomation")
+    if len(sys.argv) == 1:
+        parser.print_help()
+        print '''
+e.g. :
+    python %s -i 10.200.100.24
+    python %s -i 10.200.100.24 -c "hostname"
+    python %s -i hostfile -c "hostname"
+
+    python %s -i 10.200.100.24 -p
+    python %s -i 10.200.100.24 -c "hostname" -p
+    python %s -i hostfile -p
+    python %s -i hostfile -c "hostname" -p
+    ''' %(sys.argv[0], sys.argv[0], sys.argv[0], sys.argv[0], sys.argv[0], sys.argv[0], sys.argv[0])
+        sys.exit()
+    else:
+        (options, args) = parser.parse_args()
+        return options
+
+############################### 入口函数 ##################################
+if __name__ == "__main__":
+    # 解析参数
+    args = parseArguments()
+    #print(args)
+
+    # 检查 user
+    if args.user is None:
+	user = getpass.getuser()
+    else:
+	user = args.user
+
+    # 解析 hosts
+    if args.input is None:
+	print("\033[92m提示：选线 '-i' 是必须的'\033[0m")
+	sys.exit(1)
+    # 把标准输入的 hosts 写到一个临时文件
+    if not os.path.exists(args.input):
+        with open(tmp, 'wt') as f:
+	    for host in args.input.split(' '):
+	        f.write(host)
+	hosts = tmp
+    else:
+        hosts = args.input
+
+    # 解析运行模式
+    if args.polysh is None:
+	execCmds(user, args.password, hosts, args.commands, 'subprocess')
+    else:
+	execCmds(user, args.password, hosts, args.commands, 'polysh')
