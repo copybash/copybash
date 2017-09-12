@@ -14,15 +14,10 @@ cd polysh-0.4
 sudo python setup.py install
 '''
 
-import re
 import os
 import sys
 import time
 import getpass
-import logging
-import urllib
-import httplib
-import hashlib
 import subprocess
 from optparse import OptionParser
 
