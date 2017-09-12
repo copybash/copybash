@@ -68,7 +68,7 @@ def parseArguments():
     parser = OptionParser(usage="usage: %prog [options]")
     # nargs 不支持 * + ？ 动态参数形式，所以如果一个操作需要输入多个值时，需要使用双引号将他们括起来
     # help 不支持中文，所以 ...
-    parser.add_option("-s", "--subprocess", nargs=0, help="[default] run ssh with Python mode 'subprocess'")
+    parser.add_option("-s", "--subprocess", nargs=0, help="[default] run ssh with Python model 'subprocess'")
     parser.add_option("-p", "--polysh", nargs=0, help="[optional] run ssh with 'polysh'.")
     parser.add_option("-u", "--user", default=getpass.getuser(), help="[default] the current user")
     parser.add_option("-w", "--password", default=default_passwd, help="[default] read pasword from a file")
