@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # Author: mason.chan
-# Date: 201-09-11
+# Date: 2017-09-11
 # Description: 此脚本可以运行在 2 种模式下：
 #   1、顺序 ssh，适用于小批量远程执行命令的场景，一般比较关心输出结果
 #   2、并发 ssh，适用于不关心顺序输出结果的场景
+# Required: python.subprocess and polysh
 
 ''' install polysh
 wget http://guichaz.free.fr/polysh/files/polysh-0.4.tar.gz
@@ -61,22 +62,6 @@ def execCmds(user, pwd, hosts, cmds, mode='subprocess'):
 		 "	 --command=\"" + cmds + "\""
 	#print(sshcmd)
 	subprocess.call(sshcmd, shell=True)
-'''
-mode: stdio or file
-'''
-def parseHosts(hosts, mode):
-    print('Host: ' + hosts)
-    hostList = list()
-    if mode == 'stdio':
-	hostList = hosts.split(' ')
-    if mode == 'file':
-	with open(hosts, 'rt') as f:
-	    for line in f.readlines():
-		hostList.append(line.split('#')[0])
-    if len(hostList) == 0:
-	print('\033[91m错误：至少需要一个主机\033[0m')
-	sys.exit(1)
-    return hostList
 
 # 解析命令行参数，并返回解析结果
 def parseArguments():
