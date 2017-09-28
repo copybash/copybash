@@ -74,12 +74,12 @@ def parseArguments():
         parser.print_help()
         print '''
 e.g. :
-    python %s -i 10.200.100.24
-    python %s -i 10.200.100.24 -c "hostname"
+    python %s -i 192.168.0.10
+    python %s -i 192.168.0.10 -c "hostname"
     python %s -i hostfile -c "hostname"
 
-    python %s -i 10.200.100.24 -p
-    python %s -i 10.200.100.24 -c "hostname" -p
+    python %s -i 192.168.0.10 -p
+    python %s -i 192.168.0.10 -c "hostname" -p
     python %s -i hostfile -p
     python %s -i hostfile -c "hostname" -p
     ''' %(sys.argv[0], sys.argv[0], sys.argv[0], sys.argv[0], sys.argv[0], sys.argv[0], sys.argv[0])
