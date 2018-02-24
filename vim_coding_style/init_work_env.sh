@@ -74,8 +74,15 @@ function checkCtagsCmd()
 # install functions
 function install()
 {
+    installDependLibs
     createDirForVim
     installVimDocCN
+}
+
+function installDependLibs()
+{
+	log noten "install ctags and unzip: "
+    sudo yum install -y ctags unzip >/dev/null && echo ok || exit 1
 }
 
 function createDirForVim()
@@ -103,7 +110,7 @@ function installVimDocCN()
 # main function
 opt=$1
 if [ "$usr" == "root" ]; then
-    log errorn "You're 'root'. Do you want to continue [y/n]? "
+    log errorn "You're 'root'. To be continue [y/n]? "
     read i
     if [ "$i" != "y" ]; then
         echo "exit"

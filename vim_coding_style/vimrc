@@ -74,7 +74,6 @@ endif
 " """"" 键盘映射设置 """"""""""""""""""""""
 " """"" 参考 :help map.txt
 " """"" 使用 :map 打印所有的映射键
-" F2 打开/关闭标签列表
 " 组合键 把一个单词用指定的符号括起来
 "   <F5>    表示按键 F5
 "   b       移动到当前单词第一个字符的前面
@@ -95,12 +94,12 @@ map <unique> \'' bi'<Esc>ea'<Esc>
 "    exec "echo 'This is am example for calling function in vim'"
 "endfunc
 
+" """"" F5 开启/关闭标签模式 """"""""""""""""""""""""""""""
 " 在当前工作目录搜索 tags
 set tags+=./tags
-"当taglist是最后一个分割窗口时，自动退出 vim
+" "当 taglist 是最后一个分割窗口时，自动退出 vim
 let Tlist_Exit_OnlyWindow=1
 
-" """"" F5 开启/关闭编程模式 """"""""""""""""""""""""""""""
 map <unique> <F5> :call SwitchCodingStyle()<CR>
 let g:taglist_is_enable = 0
 func SwitchCodingStyle()
@@ -130,3 +129,21 @@ func SwitchCodingStyle()
         echo "TagList closed"
     endif
 endfunc
+
+" """"" F6 开启/关闭黏贴模式 """"""""""""""""""""""""""""""
+map <unique> <F6> :call SwitchPasteMode()<CR>
+let g:paste_is_enable = 0
+func SwitchPasteMode()
+    if g:paste_is_enable == 0
+        " 进入黏贴模式
+        :set nopaste
+        let g:paste_is_enable = 1
+        echo ":set nopaste"
+    else
+        " 退出黏贴模式
+        :set paste
+        let g:paste_is_enable = 0
+        echo ":set paste"
+    endif
+endfunc
+
