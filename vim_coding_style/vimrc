@@ -1,62 +1,65 @@
 " 如何查看相关设置的说明文档 :help key
 
-" """"" 普通操作设置 """"""""""""""""""""""
+"""""""""" vim 设置 """"""""""
 " 关闭兼容 vi ，以便使用命令补全功能
 set nocompatible
-" 开启智能补全功能
+" 开启 vim 命令智能补全功能
 set completeopt=longest,menu
-" 设置在插入模式下 <BS> 快速删除光标前面的空白字符。
-" 逗号分隔的三个值分别指：
-"   行首缩进的所有空白符、换行符和行中光标前的所有空白符。
-set backspace=indent,eol,start
-" 设置保留 N 个 vim 历史命令
+" 保留 N 个 vim 历史命令
 set history=100
-" 在 Vim 窗口的右下角显示当前光标位置
-set ruler
 " 在屏幕最后一行显示 (部分的) 命令。如果你的终端很慢，关闭此选项。
 set showcmd
-" 在输入部分查找模式时自动跳到相应的匹配点
-set incsearch
-" 高亮查找模式下的匹配点
-set hlsearch
 " 开启文档类型探测功能
 " 开启加载插件功能
 " 始终加载缩进插件
 filetype plugin indent on
-" 始终开启语法高亮功能
-syntax on
-" 使用 /usr/share/vim/vim74/colors/ 里面的 koehler.vim 配色方案
-colorscheme koehler
-" 背景色设置为深色
-set background=dark
-" 搜索时忽略大小写敏感
-set ignorecase
-" 开启自动缩进功能
-set autoindent
-" 开启智能对齐
-set smartindent
-" 设置制表符 tab 的宽度为 4
-set tabstop=4
-" 设置软制表符的宽度
-set softtabstop=4
-" 设置缩进使时用4个空格
-set shiftwidth=4
-" 设置光标可以从行首或者行尾跳到另一行
-set whichwrap=b,s,<,>,[,]
-" 设备背景色为黑色
-set previewwindow
 " 显示最后一个窗口的状态
 set laststatus=2
 " 显示 vim 当前模式
 set showmode
-" 开启自动保存文档功能
-set autowrite
+
+"""""""""" 文本配色设置 """"""""""
+" 始终开启语法高亮功能        
+syntax on                     
+" 使用 /usr/share/vim/vim74/colors/ 里面的 koehler.vim 配色方案
+colorscheme koehler
+" 背景色设置为深色
+set background=dark
+" 设备背景色为黑色
+set previewwindow
+
+"""""""""" 文本搜索设置 """"""""""
+" 在查找模式下自动跳到最近的匹配点
+set incsearch
+" 在查找模式下高亮匹配的字符
+set hlsearch
+" 搜索时忽略大小写敏感
+set ignorecase
+
+"""""""""" 文本编辑设置 """"""""""
+" 在插入模式下 <BS> 快速删除光标前面的空白字符:
+"	indent	行首缩进的所有空白符
+"	eol	换行符
+"	start	行中光标前的所有空白符
+set backspace=indent,eol,start
+" 在 Vim 窗口的右下角显示当前光标位置
+set ruler
+" 开启自动缩进功能
+set autoindent
 " 设置缩进使时用4个空格
 set shiftwidth=4
+" 开启自动保存文档功能
+set autowrite
 " 使用 C/C++ 缩进方式
 set cindent
 " 设置C/C++语言的具体缩进方式
 set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1
+" 开启智能对齐
+set smartindent
+" 设置制表符 tab 的宽度为 4，可能会造成不同的 vimrc 环境中，tab 对齐不兼容
+"set tabstop=4
+" 设置软制表符的宽度
+set softtabstop=4
 " 设置退格键可用
 set backspace=2
 " 设置匹配模式，显示匹配的括号
@@ -71,10 +74,13 @@ if version >= 603
      set encoding=utf-8
 endif
 
-" """"" 键盘映射设置 """"""""""""""""""""""
-" """"" 参考 :help map.txt
-" """"" 使用 :map 打印所有的映射键
-" 组合键 把一个单词用指定的符号括起来
+"""""""""" 键盘按键映射设置 """"""""""""""""""""""
+" 参考 :help map.txt
+" 使用 :map 打印所有的映射键
+"   按键映射：对1个或多个按键定义一组操作，达到快速完成多个操作的目的
+"   函数映射：将按键与函数映射，达到快速执行函数的目的
+
+"""""""""" 按键和命令 """"""""""
 "   <F5>    表示按键 F5
 "   b       移动到当前单词第一个字符的前面
 "   i{      插入字符 {
@@ -89,6 +95,7 @@ map <unique> \<> bi<<Esc>ea><Esc>
 map <unique> \"" bi"<Esc>ea"<Esc>
 map <unique> \'' bi'<Esc>ea'<Esc>
 
+"""""""""" 函数映射 demo """"""""""
 "map <F2> :call CompileGo()<CR>
 "func CompileGo()
 "    exec "echo 'This is am example for calling function in vim'"
@@ -146,4 +153,3 @@ func SwitchPasteMode()
         echo ":set paste"
     endif
 endfunc
-
